@@ -1,0 +1,21 @@
+body {
+  background: #f6f7fb;
+}
+
+.login-box {
+  min-width: 220px;
+}
+
+.card {
+  border: 0;
+}
+
+.split-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.money {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
