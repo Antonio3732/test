@@ -24,7 +24,15 @@ def run_reminder_job() -> None:
 async def lifespan(app: FastAPI):
     init_db()
     if not scheduler.running:
-        scheduler.add_job(run_reminder_job, "cron", hour=9, minute=0, id="daily_bill_reminders", replace_existing=True)
+        scheduler.add_job(
+            run_reminder_job,
+            "cron",
+            hour=9,
+            minute=0,
+            id="daily_bill_reminders",
+            replace_existing=True,
+            misfire_grace_time=3600,
+        )
         scheduler.start()
     yield
     if scheduler.running:
@@ -59,6 +67,9 @@ def create_expense(payload: ExpenseCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Paid-by user does not exist")
 
     split_ids = list(dict.fromkeys(payload.split_between_user_ids))
+    if payload.paid_by_user_id not in split_ids:
+        raise HTTPException(status_code=400, detail="The payer must be included in the split")
+
     participants = db.query(User).filter(User.id.in_(split_ids)).all()
     if len(participants) != len(split_ids):
         raise HTTPException(status_code=400, detail="One or more split users do not exist")

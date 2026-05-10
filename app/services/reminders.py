@@ -55,7 +55,8 @@ def send_email(recipients: list[str], subject: str, body: str) -> bool:
 
     message = EmailMessage()
     message["From"] = sender
-    message["To"] = ", ".join(recipients)
+    message["To"] = sender
+    message["Bcc"] = ", ".join(recipients)
     message["Subject"] = subject
     message.set_content(body)
 

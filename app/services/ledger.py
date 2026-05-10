@@ -21,13 +21,19 @@ def calculate_settlements(users: list[User], expenses: list[Expense]) -> list[Se
         if not participants:
             continue
 
+        payer_id = expense.paid_by_user_id
+        if payer_id not in balances:
+            continue
+
         total_cents = decimal_to_cents(expense.amount)
         base_share = total_cents // len(participants)
         remainder = total_cents % len(participants)
 
-        balances[expense.paid_by_user_id] += total_cents
+        balances[payer_id] += total_cents
 
         for index, participant in enumerate(participants):
+            if participant.id not in balances:
+                continue
             share = base_share + (1 if index < remainder else 0)
             balances[participant.id] -= share
 
